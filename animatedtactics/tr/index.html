@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Animated Tactics — hamleyi çiz, oynat, paylaş</title>
+<meta name="description" content="iPad'de futbol taktiği kur, koşuları canlandır ve X, YouTube ya da yayın için hazır döngüsel bir klip olarak dışa aktar. Yakında App Store'da — içerik üreticilerine erken erişim açık.">
+<link rel="icon" href="../assets/icon.png">
+<link rel="apple-touch-icon" href="../assets/icon.png">
+<link rel="alternate" hreflang="en" href="https://bisikli.github.io/BrightFlowInc/animatedtactics/">
+<link rel="alternate" hreflang="tr" href="https://bisikli.github.io/BrightFlowInc/animatedtactics/tr/">
+<link rel="alternate" hreflang="x-default" href="https://bisikli.github.io/BrightFlowInc/animatedtactics/">
+<meta name="theme-color" content="#0A0F0A">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="tr_TR">
+<meta property="og:title" content="Animated Tactics">
+<meta property="og:description" content="Hamleyi çiz, oynat, paylaş. iPad'de animasyonlu futbol taktikleri — saniyeler içinde döngüsel bir klip.">
+<meta property="og:image" content="https://bisikli.github.io/BrightFlowInc/animatedtactics/assets/og.png">
+<meta property="og:url" content="https://bisikli.github.io/BrightFlowInc/animatedtactics/tr/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Animated Tactics">
+<meta name="twitter:description" content="Hamleyi çiz, oynat, paylaş. iPad'de animasyonlu futbol taktikleri.">
+<meta name="twitter:image" content="https://bisikli.github.io/BrightFlowInc/animatedtactics/assets/og.png">
+
+<style>
+  :root {
+    --bg:      #080C08;
+    --panel:   #0E140E;
+    --panel-2: #121A12;
+    --line:    #1E2A1E;
+    --ink:     #F2F5F2;
+    --ink-dim: #9BAA9B;
+    --ink-mut: #6E7D6E;
+    --red:     #E63836;
+    --blue:    #4085F2;
+    --green:   #1F7A37;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 17px/1.65 var(--sans);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  img, video { max-width: 100%; display: block; }
+
+  a { color: inherit; }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  .label {
+    font: 600 12px/1 var(--mono);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--red);
+  }
+
+  /* ---------- hero ---------- */
+
+  .hero {
+    position: relative;
+    padding: 72px 0 64px;
+    border-bottom: 1px solid var(--line);
+    background:
+      radial-gradient(900px 460px at 50% -10%, rgba(31,122,55,.20), transparent 70%),
+      radial-gradient(600px 300px at 85% 10%, rgba(64,133,242,.09), transparent 70%);
+  }
+
+  .hero-inner { display: flex; flex-direction: column; align-items: center; text-align: center; }
+
+  .lang {
+    position: absolute; top: 20px; right: 22px;
+    display: flex; gap: 2px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 4px;
+  }
+  .lang a {
+    font: 600 12px/1 var(--mono);
+    letter-spacing: .08em;
+    text-decoration: none;
+    color: var(--ink-mut);
+    padding: 8px 12px;
+    border-radius: 999px;
+  }
+  .lang a:hover { color: var(--ink); }
+  .lang a.on { background: var(--red); color: #fff; }
+
+  .icon {
+    width: 92px; height: 92px; border-radius: 21px;
+    box-shadow: 0 12px 32px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.07);
+    margin-bottom: 26px;
+  }
+
+  h1 {
+    font-size: clamp(38px, 7vw, 62px);
+    line-height: 1.04;
+    letter-spacing: -.028em;
+    font-weight: 700;
+    margin: 0 0 18px;
+    max-width: 16ch;
+  }
+
+  h1 .accent { color: var(--red); }
+
+  .lede {
+    font-size: clamp(17px, 2.3vw, 20px);
+    color: var(--ink-dim);
+    max-width: 60ch;
+    margin: 0 0 30px;
+  }
+
+  .status {
+    display: inline-flex; align-items: center; gap: 10px;
+    font: 600 12.5px/1 var(--mono);
+    letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ink-dim);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 9px 16px;
+    margin-bottom: 30px;
+  }
+
+  .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--red);
+    box-shadow: 0 0 0 4px rgba(230,56,54,.18);
+    flex: none;
+  }
+
+  .cta-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 9px;
+    font: 600 16px/1 var(--sans);
+    text-decoration: none;
+    padding: 15px 26px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    transition: transform .12s ease, background .12s ease, border-color .12s ease;
+  }
+  .btn:active { transform: translateY(1px); }
+
+  .btn-primary { background: var(--red); color: #fff; }
+  .btn-primary:hover { background: #F04A48; }
+
+  .btn-ghost { background: transparent; color: var(--ink); border-color: #2C3A2C; }
+  .btn-ghost:hover { background: var(--panel); border-color: #3C4C3C; }
+
+  /* ---------- sections ---------- */
+
+  section { padding: 84px 0; border-bottom: 1px solid var(--line); }
+
+  h2 {
+    font-size: clamp(27px, 4vw, 37px);
+    line-height: 1.14;
+    letter-spacing: -.02em;
+    font-weight: 700;
+    margin: 14px 0 14px;
+    max-width: 24ch;
+  }
+
+  .sub { color: var(--ink-dim); max-width: 62ch; margin: 0 0 42px; font-size: 17px; }
+
+  /* ---------- the export wall ---------- */
+
+  .clips {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .clip {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .clip img { width: 100%; height: auto; background: #0B140B; }
+
+  .clip figcaption {
+    font: 600 12px/1 var(--mono);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-mut);
+    padding: 14px 16px;
+    border-top: 1px solid var(--line);
+  }
+
+  .note {
+    margin-top: 26px;
+    color: var(--ink-mut);
+    font-size: 15px;
+    max-width: 62ch;
+  }
+
+  /* ---------- creator cards ---------- */
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 26px 24px;
+  }
+
+  .card h3 {
+    font-size: 18px; font-weight: 650; margin: 12px 0 8px; letter-spacing: -.01em;
+  }
+
+  .card p { margin: 0; color: var(--ink-dim); font-size: 15.5px; line-height: 1.6; }
+
+  .card .n {
+    font: 600 12px/1 var(--mono);
+    letter-spacing: .12em;
+    color: var(--red);
+  }
+
+  /* ---------- steps ---------- */
+
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+
+  .step {
+    border-left: 2px solid var(--red);
+    padding: 4px 0 4px 20px;
+  }
+  .step h3 { font: 600 13px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; margin: 0 0 10px; color: var(--ink); }
+  .step p { margin: 0; color: var(--ink-dim); font-size: 15.5px; }
+
+  /* ---------- split ---------- */
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+
+  .shot {
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    overflow: hidden;
+    background: var(--panel);
+  }
+
+  ul.feat { list-style: none; padding: 0; margin: 0; }
+  ul.feat li {
+    padding: 13px 0 13px 28px;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    color: var(--ink-dim);
+    font-size: 15.5px;
+  }
+  ul.feat li:last-child { border-bottom: 0; }
+  ul.feat li strong { color: var(--ink); font-weight: 600; }
+  ul.feat li::before {
+    content: "";
+    position: absolute; left: 4px; top: 21px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--blue);
+  }
+
+  /* ---------- roadmap ---------- */
+
+  .road { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+
+  .road-item {
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 24px;
+  }
+  .road-item .tag {
+    display: inline-block;
+    font: 600 11px/1 var(--mono);
+    letter-spacing: .12em; text-transform: uppercase;
+    color: #0B140B; background: var(--ink-mut);
+    padding: 5px 9px; border-radius: 5px; margin-bottom: 14px;
+  }
+  .road-item h3 { font-size: 17px; font-weight: 650; margin: 0 0 8px; }
+  .road-item p { margin: 0; color: var(--ink-dim); font-size: 15px; }
+
+  /* ---------- contact ---------- */
+
+  .contact { text-align: center; }
+  .contact h2 { margin-left: auto; margin-right: auto; }
+  .contact .sub { margin-left: auto; margin-right: auto; }
+
+  .mailbox {
+    display: inline-block;
+    font: 600 clamp(17px, 3.4vw, 25px)/1.3 var(--mono);
+    color: var(--ink);
+    text-decoration: none;
+    background: var(--panel);
+    border: 1px solid #2C3A2C;
+    border-radius: 12px;
+    padding: 18px 26px;
+    margin-bottom: 22px;
+    word-break: break-all;
+  }
+  .mailbox:hover { border-color: var(--red); }
+
+  .ask {
+    color: var(--ink-mut);
+    font-size: 15px;
+    max-width: 56ch;
+    margin: 0 auto;
+  }
+
+  /* ---------- footer ---------- */
+
+  footer {
+    padding: 44px 0 60px;
+    color: var(--ink-mut);
+    font-size: 14.5px;
+  }
+  footer .foot-inner { display: flex; flex-wrap: wrap; gap: 14px 26px; justify-content: space-between; align-items: center; }
+  footer a { color: var(--ink-dim); text-decoration: none; }
+  footer a:hover { color: var(--ink); text-decoration: underline; }
+  footer nav { display: flex; flex-wrap: wrap; gap: 20px; }
+
+  @media (max-width: 800px) {
+    .split { grid-template-columns: 1fr; gap: 32px; }
+    .cards { grid-template-columns: 1fr; }
+    section { padding: 62px 0; }
+    .hero { padding: 56px 0 52px; }
+    .wrap { padding: 0 20px; }
+    .cta-row { flex-direction: column; align-items: stretch; }
+    .btn { justify-content: center; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="lang">
+    <a href="../">EN</a>
+    <a class="on" href="./" aria-current="page">TR</a>
+  </div>
+
+  <div class="wrap hero-inner">
+    <img class="icon" src="../assets/icon.png" alt="Animated Tactics uygulama simgesi" width="92" height="92">
+
+    <div class="status"><span class="dot"></span> Yakında App&nbsp;Store'da</div>
+
+    <h1>Hamleyi çiz.<br>Oynat. <span class="accent">Paylaş.</span></h1>
+
+    <p class="lede">
+      Animated Tactics, bir futbol fikrini iPad üzerinde döngüsel bir klibe çevirir — dizilişi kur,
+      koşuları çiz, oynat. Çıkan klip X, YouTube, TikTok ya da yayın ekranın için hazırdır.
+    </p>
+
+    <div class="cta-row">
+      <a class="btn btn-primary" href="mailto:bilgehan@brightflow.biz?subject=Animated%20Tactics%20%E2%80%94%20erken%20eri%C5%9Fim&amp;body=Merhaba%20%E2%80%94%20erken%20eri%C5%9Fim%20istiyorum.%0A%0AYay%C4%B1n%20yapt%C4%B1%C4%9F%C4%B1m%20yer%3A%20%0AKitle%20b%C3%BCy%C3%BCkl%C3%BC%C4%9F%C3%BC%3A%20%0ANe%20i%C3%A7in%20kullanaca%C4%9F%C4%B1m%3A%20%0A">
+        Erken erişim al
+      </a>
+      <a class="btn btn-ghost" href="https://x.com/AnimatedTactics" rel="noopener">@AnimatedTactics'i takip et</a>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="label">Çıktı</div>
+    <h2>Paylaştığın şey bu</h2>
+    <p class="sub">
+      Aşağıdaki kliplerin hepsi doğrudan uygulamadan çıktı — video editörü yok, hareketli grafik yok,
+      render kuyruğu yok. Tek bir taktik fikir, döngüde, sesi kapalıyken bile anlaşılır.
+    </p>
+
+    <div class="clips">
+      <figure class="clip" style="margin:0">
+        <img src="../assets/one-two-in-behind.gif" alt="Animasyonlu taktik: savunma arkasına atılan duvar pası" width="1080" height="828">
+        <figcaption>Duvar pası, arkaya koşu</figcaption>
+      </figure>
+      <figure class="clip" style="margin:0">
+        <img src="../assets/overlap-cutback.gif" alt="Animasyonlu taktik: overlap yapan bek dip çizgiye inip topu geri çeviriyor" width="1080" height="828" loading="lazy">
+        <figcaption>Overlap ve geri çevirme</figcaption>
+      </figure>
+      <figure class="clip" style="margin:0">
+        <img src="../assets/switch-far-post-arrival.gif" alt="Animasyonlu taktik: oyun değişikliği ve uzak direğe gelen koşu" width="1080" height="828" loading="lazy">
+        <figcaption>Oyun değişikliği, uzak direk</figcaption>
+      </figure>
+    </div>
+
+    <p class="note">
+      Döngüsel GIF ya da MP4 olarak dışa aktar; 16:9, 9:16, 1:1 veya kamerayı nasıl ayarladıysan tam o
+      çerçevede — böylece aynı hamle, yeniden kırpmaya gerek kalmadan bir gönderiye, bir shorts'a ya da
+      tam genişlikte bir bölüme oturur.
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="label">İçerik üreticileri için</div>
+    <h2>Ekranda görünmek için tasarlandı</h2>
+    <p class="sub">
+      Bu uygulama, lansmandan önce içerik üreticileriyle çalışarak keskinleşiyor. Futbolu bir kitleye
+      anlatıyorsan, seni bekleyen bir sürüm var.
+    </p>
+
+    <div class="cards">
+      <div class="card">
+        <div class="n">01</div>
+        <h3>Herkesten önce erken erişim</h3>
+        <p>İçerik üreticileri uygulamayı App Store lansmanından önce kullanmaya başlıyor — üstüne,
+        değişmesini istediğin her şey için doğrudan bir iletişim hattı.</p>
+      </div>
+      <div class="card">
+        <div class="n">02</div>
+        <h3>Yayın için yapılmış yatay düzen</h3>
+        <p>iPad düzeni yatayda kendini yeniden diziyor: saha 16:9 kareyi dolduruyor, iki yanda siyah
+        boşluk kalmıyor. Bu düzen özellikle yayına çıkmak için var.</p>
+      </div>
+      <div class="card">
+        <div class="n">03</div>
+        <h3>Senin renklerin, bir kulübün değil</h3>
+        <p>Takım adları, forma renkleri ve detay renkleri tamamen senin belirlediğin şeyler. Tahta
+        başkasının armasına değil, senin kanalına benziyor.</p>
+      </div>
+      <div class="card">
+        <div class="n">04</div>
+        <h3>Canlı yayında yetişecek kadar hızlı</h3>
+        <p>Sürükle, çiz, oynat. Bir hamle yaklaşık bir dakikada kuruluyor; yani gelen bir soruyu
+        cevabı çizerek yanıtlayabilirsin.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="label">Nasıl çalışır</div>
+    <h2>Üç adımda bir taktik</h2>
+    <p class="sub">Her şey tek ekranda olur — mod değiştirmeden yerleştir, çiz ve oynat.</p>
+
+    <div class="steps">
+      <div class="step">
+        <h3>1 — Yerleştir</h3>
+        <p>Her nokta kendi mevkisini gösterir. Şeklini kurmak için onları sürükle ya da tek dokunuşla bir diziliş uygula.</p>
+      </div>
+      <div class="step">
+        <h3>2 — Koşuları çiz</h3>
+        <p>Bir oyuncuya dokunup seç, sonra sahaya dokunarak veya sürükleyerek nereye koşacağını belirle. Fikri işaretlemek için istediğin yere ok ekle.</p>
+      </div>
+      <div class="step">
+        <h3>3 — Oynat ve aktar</h3>
+        <p>Hamlenin tamamını önizlemek için oynata bas, sonra döngüsel GIF ya da MP4 olarak dışa aktar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap split">
+    <div>
+      <div class="label">Tahta</div>
+      <h2>Slayt gösterisi değil, gerçek bir taktik tahtası</h2>
+      <ul class="feat">
+        <li><strong>On bir diziliş</strong> — 4-4-2'den 3-2-4-1'e, iki takıma da uygulanabilir.</li>
+        <li><strong>İki takım aynı sahada</strong> — kendi adların, formaların ve detay renklerinle.</li>
+        <li><strong>Pas seçenekleri</strong> — topun bulunduğu yerden hangi pasların gerçekten açık olduğunu gör.</li>
+        <li><strong>Kare kare zamanlama</strong> — hamleyi elinle oynat; uygulama yalnızca şekli değil, zamanlamanı da korusun.</li>
+        <li><strong>Açıklama okları</strong> — düz ya da kavisli, tek hareketle çizilir.</li>
+        <li><strong>Sahne kütüphanesi</strong> — otomatik kayıt, geri alma ve bir fikri dallandırmak için çoğaltma.</li>
+        <li><strong>Altı dil</strong> — Türkçe, İngilizce, Almanca, Fransızca, İspanyolca, Portekizce.</li>
+        <li><strong>iPad ve iPhone</strong> — iOS 17 ve üzeri. En rahat ettiği yer iPad.</li>
+      </ul>
+    </div>
+    <div class="shot">
+      <img src="../assets/workspace.jpg" alt="iPad üzerinde Animated Tactics tahtası, sahanın yanında açık sahne kütüphanesiyle" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="label">Sırada ne var</div>
+    <h2>Yolda olanlar</h2>
+    <p class="sub">Neyin hazır olduğu, neyin olmadığı konusunda açık olalım.</p>
+
+    <div class="road">
+      <div class="road-item">
+        <span class="tag">Sırada</span>
+        <h3>App Store lansmanı</h3>
+        <p>Sürüm hazır ve kısa süre içinde App Review'a gidiyor. İçerik üreticileri kendi kopyalarını
+        uygulama mağazaya düşmeden önce alıyor.</p>
+      </div>
+      <div class="road-item">
+        <span class="tag">Geliştiriliyor</span>
+        <h3>Düzenlemeyi kelimelerle anlat</h3>
+        <p>Neyin değişmesi gerektiğini söyle ya da yaz — "sol beki yukarı al, overlap yapsın" — tahtadaki
+        sahne ona göre güncellensin. Lansman sürümünde yok.</p>
+      </div>
+      <div class="road-item">
+        <span class="tag">Geliştiriliyor</span>
+        <h3>Gerçek bir maçtan sahneler</h3>
+        <p>Bir maçı göster, goller ve önemli anlar düzenlenebilir animasyonlu sahneler olarak geri gelsin.
+        Lansman sürümünde yok.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact">
+  <div class="wrap">
+    <div class="label">İletişim</div>
+    <h2>İçerik mi üretiyorsun? Konuşalım.</h2>
+    <p class="sub">
+      İş birlikleri, erken erişim ya da uygulamayla ilgili sorular — bu adres doğrudan bize ulaşır,
+      ve cevap veririz.
+    </p>
+
+    <a class="mailbox" href="mailto:bilgehan@brightflow.biz?subject=Animated%20Tactics%20%E2%80%94%20soru">bilgehan@brightflow.biz</a>
+
+    <p class="ask">
+      Erken erişim için nerede yayın yaptığını, kitlenin yaklaşık büyüklüğünü ve uygulamayı ne için
+      kullanacağını yazman işi hızlandırır.
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-inner">
+    <div>© 2026 BrightFlow Inc</div>
+    <nav>
+      <a href="../../animatedtactics-privacy.html">Gizlilik Politikası</a>
+      <a href="https://x.com/AnimatedTactics" rel="noopener">@AnimatedTactics</a>
+      <a href="mailto:bilgehan@brightflow.biz">İletişim</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
