@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Animated Tactics — draw the move, watch it play, post it</title>
+<meta name="description" content="Build a football tactic on an iPad, animate the runs, and export a looping clip ready for X, YouTube or a stream. Coming soon to the App Store — early access open for creators.">
+<link rel="icon" href="assets/icon.png">
+<link rel="apple-touch-icon" href="assets/icon.png">
+<meta name="theme-color" content="#0A0F0A">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Animated Tactics">
+<meta property="og:description" content="Draw the move, watch it play, post it. Animated football tactics on iPad — export a looping clip in seconds. Early access open for creators.">
+<meta property="og:image" content="https://bisikli.github.io/BrightFlowInc/animatedtactics/assets/og.png">
+<meta property="og:url" content="https://bisikli.github.io/BrightFlowInc/animatedtactics/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Animated Tactics">
+<meta name="twitter:description" content="Draw the move, watch it play, post it. Animated football tactics on iPad.">
+<meta name="twitter:image" content="https://bisikli.github.io/BrightFlowInc/animatedtactics/assets/og.png">
+
+<style>
+  :root {
+    --bg:      #080C08;
+    --panel:   #0E140E;
+    --panel-2: #121A12;
+    --line:    #1E2A1E;
+    --ink:     #F2F5F2;
+    --ink-dim: #9BAA9B;
+    --ink-mut: #6E7D6E;
+    --red:     #E63836;
+    --blue:    #4085F2;
+    --green:   #1F7A37;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 17px/1.65 var(--sans);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  img, video { max-width: 100%; display: block; }
+
+  a { color: inherit; }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  .label {
+    font: 600 12px/1 var(--mono);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--red);
+  }
+
+  /* ---------- hero ---------- */
+
+  .hero {
+    position: relative;
+    padding: 72px 0 64px;
+    border-bottom: 1px solid var(--line);
+    background:
+      radial-gradient(900px 460px at 50% -10%, rgba(31,122,55,.20), transparent 70%),
+      radial-gradient(600px 300px at 85% 10%, rgba(64,133,242,.09), transparent 70%);
+  }
+
+  .hero-inner { display: flex; flex-direction: column; align-items: center; text-align: center; }
+
+  .icon {
+    width: 92px; height: 92px; border-radius: 21px;
+    box-shadow: 0 12px 32px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.07);
+    margin-bottom: 26px;
+  }
+
+  h1 {
+    font-size: clamp(38px, 7vw, 62px);
+    line-height: 1.04;
+    letter-spacing: -.028em;
+    font-weight: 700;
+    margin: 0 0 18px;
+    max-width: 16ch;
+  }
+
+  h1 .accent { color: var(--red); }
+
+  .lede {
+    font-size: clamp(17px, 2.3vw, 20px);
+    color: var(--ink-dim);
+    max-width: 60ch;
+    margin: 0 0 30px;
+  }
+
+  .status {
+    display: inline-flex; align-items: center; gap: 10px;
+    font: 600 12.5px/1 var(--mono);
+    letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ink-dim);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 9px 16px;
+    margin-bottom: 30px;
+  }
+
+  .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--red);
+    box-shadow: 0 0 0 4px rgba(230,56,54,.18);
+    flex: none;
+  }
+
+  .cta-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 9px;
+    font: 600 16px/1 var(--sans);
+    text-decoration: none;
+    padding: 15px 26px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    transition: transform .12s ease, background .12s ease, border-color .12s ease;
+  }
+  .btn:active { transform: translateY(1px); }
+
+  .btn-primary { background: var(--red); color: #fff; }
+  .btn-primary:hover { background: #F04A48; }
+
+  .btn-ghost { background: transparent; color: var(--ink); border-color: #2C3A2C; }
+  .btn-ghost:hover { background: var(--panel); border-color: #3C4C3C; }
+
+  /* ---------- sections ---------- */
+
+  section { padding: 84px 0; border-bottom: 1px solid var(--line); }
+
+  h2 {
+    font-size: clamp(27px, 4vw, 37px);
+    line-height: 1.14;
+    letter-spacing: -.02em;
+    font-weight: 700;
+    margin: 14px 0 14px;
+    max-width: 22ch;
+  }
+
+  .sub { color: var(--ink-dim); max-width: 62ch; margin: 0 0 42px; font-size: 17px; }
+
+  /* ---------- the export wall ---------- */
+
+  .clips {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .clip {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .clip img { width: 100%; height: auto; background: #0B140B; }
+
+  .clip figcaption {
+    font: 600 12px/1 var(--mono);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-mut);
+    padding: 14px 16px;
+    border-top: 1px solid var(--line);
+  }
+
+  .note {
+    margin-top: 26px;
+    color: var(--ink-mut);
+    font-size: 15px;
+    max-width: 62ch;
+  }
+
+  /* ---------- creator cards ---------- */
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 26px 24px;
+  }
+
+  .card h3 {
+    font-size: 18px; font-weight: 650; margin: 12px 0 8px; letter-spacing: -.01em;
+  }
+
+  .card p { margin: 0; color: var(--ink-dim); font-size: 15.5px; line-height: 1.6; }
+
+  .card .n {
+    font: 600 12px/1 var(--mono);
+    letter-spacing: .12em;
+    color: var(--red);
+  }
+
+  /* ---------- steps ---------- */
+
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+
+  .step {
+    border-left: 2px solid var(--red);
+    padding: 4px 0 4px 20px;
+  }
+  .step h3 { font: 600 13px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; margin: 0 0 10px; color: var(--ink); }
+  .step p { margin: 0; color: var(--ink-dim); font-size: 15.5px; }
+
+  /* ---------- split ---------- */
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+
+  .shot {
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    overflow: hidden;
+    background: var(--panel);
+  }
+
+  ul.feat { list-style: none; padding: 0; margin: 0; }
+  ul.feat li {
+    padding: 13px 0 13px 28px;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    color: var(--ink-dim);
+    font-size: 15.5px;
+  }
+  ul.feat li:last-child { border-bottom: 0; }
+  ul.feat li strong { color: var(--ink); font-weight: 600; }
+  ul.feat li::before {
+    content: "";
+    position: absolute; left: 4px; top: 21px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--blue);
+  }
+
+  /* ---------- roadmap ---------- */
+
+  .road { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+
+  .road-item {
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 24px;
+  }
+  .road-item .tag {
+    display: inline-block;
+    font: 600 11px/1 var(--mono);
+    letter-spacing: .12em; text-transform: uppercase;
+    color: #0B140B; background: var(--ink-mut);
+    padding: 5px 9px; border-radius: 5px; margin-bottom: 14px;
+  }
+  .road-item h3 { font-size: 17px; font-weight: 650; margin: 0 0 8px; }
+  .road-item p { margin: 0; color: var(--ink-dim); font-size: 15px; }
+
+  /* ---------- contact ---------- */
+
+  .contact { text-align: center; }
+  .contact h2 { margin-left: auto; margin-right: auto; }
+  .contact .sub { margin-left: auto; margin-right: auto; }
+
+  .mailbox {
+    display: inline-block;
+    font: 600 clamp(17px, 3.4vw, 25px)/1.3 var(--mono);
+    color: var(--ink);
+    text-decoration: none;
+    background: var(--panel);
+    border: 1px solid #2C3A2C;
+    border-radius: 12px;
+    padding: 18px 26px;
+    margin-bottom: 22px;
+    word-break: break-all;
+  }
+  .mailbox:hover { border-color: var(--red); }
+
+  .ask {
+    color: var(--ink-mut);
+    font-size: 15px;
+    max-width: 54ch;
+    margin: 0 auto;
+  }
+
+  /* ---------- footer ---------- */
+
+  footer {
+    padding: 44px 0 60px;
+    color: var(--ink-mut);
+    font-size: 14.5px;
+  }
+  footer .foot-inner { display: flex; flex-wrap: wrap; gap: 14px 26px; justify-content: space-between; align-items: center; }
+  footer a { color: var(--ink-dim); text-decoration: none; }
+  footer a:hover { color: var(--ink); text-decoration: underline; }
+  footer nav { display: flex; flex-wrap: wrap; gap: 20px; }
+
+  @media (max-width: 800px) {
+    .split { grid-template-columns: 1fr; gap: 32px; }
+    .cards { grid-template-columns: 1fr; }
+    section { padding: 62px 0; }
+    .hero { padding: 56px 0 52px; }
+    .wrap { padding: 0 20px; }
+    .cta-row { flex-direction: column; align-items: stretch; }
+    .btn { justify-content: center; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap hero-inner">
+    <img class="icon" src="assets/icon.png" alt="Animated Tactics app icon" width="92" height="92">
+
+    <div class="status"><span class="dot"></span> Coming soon to the App&nbsp;Store</div>
+
+    <h1>Draw the move.<br>Watch it play. <span class="accent">Post it.</span></h1>
+
+    <p class="lede">
+      Animated Tactics turns a football idea into a looping clip on an iPad — position the shape,
+      draw the runs, hit play. What comes out is ready for X, YouTube, TikTok or your stream overlay.
+    </p>
+
+    <div class="cta-row">
+      <a class="btn btn-primary" href="mailto:bilgehan@brightflow.biz?subject=Animated%20Tactics%20%E2%80%94%20creator%20early%20access&amp;body=Hi%20%E2%80%94%20I%27d%20like%20early%20access.%0A%0AWhere%20I%20publish%3A%20%0AAudience%20size%3A%20%0AWhat%20I%27d%20use%20it%20for%3A%20%0A">
+        Get early access
+      </a>
+      <a class="btn btn-ghost" href="https://x.com/AnimatedTactics" rel="noopener">Follow @AnimatedTactics</a>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="label">The export</div>
+    <h2>This is what you post</h2>
+    <p class="sub">
+      Every clip below came straight out of the app — no editor, no motion graphics, no render queue.
+      One tactical idea, looping, readable with the sound off.
+    </p>
+
+    <div class="clips">
+      <figure class="clip" style="margin:0">
+        <img src="assets/one-two-in-behind.gif" alt="Animated tactic: a one-two played in behind the defensive line" width="1080" height="828">
+        <figcaption>One-two in behind</figcaption>
+      </figure>
+      <figure class="clip" style="margin:0">
+        <img src="assets/overlap-cutback.gif" alt="Animated tactic: an overlapping full-back reaching the byline and cutting the ball back" width="1080" height="828" loading="lazy">
+        <figcaption>Overlap &amp; cutback</figcaption>
+      </figure>
+      <figure class="clip" style="margin:0">
+        <img src="assets/switch-far-post-arrival.gif" alt="Animated tactic: a switch of play followed by a far-post arrival" width="1080" height="828" loading="lazy">
+        <figcaption>Switch, far-post arrival</figcaption>
+      </figure>
+    </div>
+
+    <p class="note">
+      Export as a looping GIF or an MP4, framed 16:9, 9:16, 1:1 or exactly as you set the camera —
+      so the same move fits a timeline post, a short, or a full-width segment without recropping.
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="label">For creators</div>
+    <h2>Built to be on screen</h2>
+    <p class="sub">
+      Partnering with creators before launch is how this app gets sharpened. If you break down
+      football for an audience, there's a build waiting for you.
+    </p>
+
+    <div class="cards">
+      <div class="card">
+        <div class="n">01</div>
+        <h3>Early access, before anyone else</h3>
+        <p>Creators get a build now, ahead of the public App Store release, plus a direct line for
+        anything you need changed.</p>
+      </div>
+      <div class="card">
+        <div class="n">02</div>
+        <h3>A landscape layout made for streaming</h3>
+        <p>The iPad layout rearranges itself in landscape so the pitch fills a 16:9 frame instead of
+        sitting in pillarboxes. That layout exists specifically for going on stream.</p>
+      </div>
+      <div class="card">
+        <div class="n">03</div>
+        <h3>Your colours, not a club's</h3>
+        <p>Team names, kit colours and trims are all yours to set, so the board matches your channel
+        rather than someone else's badge.</p>
+      </div>
+      <div class="card">
+        <div class="n">04</div>
+        <h3>Fast enough to do live</h3>
+        <p>Drag, draw, play. A move takes about a minute to build, so you can answer a question
+        on air by drawing the answer.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="label">How it works</div>
+    <h2>A tactic in three steps</h2>
+    <p class="sub">Everything happens on one screen — position, draw and play without switching modes.</p>
+
+    <div class="steps">
+      <div class="step">
+        <h3>1 — Position</h3>
+        <p>Each dot shows its position. Drag them to build your shape, or drop a formation on in one tap.</p>
+      </div>
+      <div class="step">
+        <h3>2 — Draw runs</h3>
+        <p>Tap a player to select them, then tap or drag the pitch to set where they run. Add arrows anywhere to mark the idea.</p>
+      </div>
+      <div class="step">
+        <h3>3 — Play &amp; export</h3>
+        <p>Press play to preview the whole move, then export it as a looping GIF or an MP4.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap split">
+    <div>
+      <div class="label">The board</div>
+      <h2>A real tactics board, not a slideshow</h2>
+      <ul class="feat">
+        <li><strong>Eleven formations</strong> — from 4-4-2 to 3-2-4-1, applied to either side.</li>
+        <li><strong>Both teams on one pitch</strong> — with your own names, kits and trim colours.</li>
+        <li><strong>Passing lanes</strong> — see which options are actually open from where the ball is.</li>
+        <li><strong>Keyframe timing</strong> — perform a move by hand and the app keeps your timing, not just the shape.</li>
+        <li><strong>Annotation arrows</strong> — straight or curved, drawn with one gesture.</li>
+        <li><strong>A scene library</strong> — with autosave, undo, and duplicate to branch an idea.</li>
+        <li><strong>Six languages</strong> — English, German, French, Spanish, Portuguese, Turkish.</li>
+        <li><strong>iPad and iPhone</strong> — iOS 17 or later. iPad is where it's happiest.</li>
+      </ul>
+    </div>
+    <div class="shot">
+      <img src="assets/workspace.jpg" alt="The Animated Tactics board on iPad, with the scene library open beside the pitch" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="label">What's next</div>
+    <h2>On the way</h2>
+    <p class="sub">Being straight about what's shipped and what isn't.</p>
+
+    <div class="road">
+      <div class="road-item">
+        <span class="tag">Next up</span>
+        <h3>App Store release</h3>
+        <p>The build is finished and goes to App Review shortly. Creators get their copy before it
+        reaches the store.</p>
+      </div>
+      <div class="road-item">
+        <span class="tag">In development</span>
+        <h3>Describe an edit in words</h3>
+        <p>Say or type what should change — "push the left-back higher and have him overlap" — and the
+        scene on the board updates. Not in the launch build.</p>
+      </div>
+      <div class="road-item">
+        <span class="tag">In development</span>
+        <h3>A real match into scenes</h3>
+        <p>Point it at a fixture and get the goals and key moments back as editable animated scenes.
+        Not in the launch build.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact">
+  <div class="wrap">
+    <div class="label">Get in touch</div>
+    <h2>Creator? Let's talk.</h2>
+    <p class="sub">
+      Partnerships, early access, or just questions about the app — this reaches us directly,
+      and we answer.
+    </p>
+
+    <a class="mailbox" href="mailto:bilgehan@brightflow.biz?subject=Animated%20Tactics%20%E2%80%94%20enquiry">bilgehan@brightflow.biz</a>
+
+    <p class="ask">
+      For early access, it helps to say where you publish, roughly how big your audience is,
+      and what you'd use the app for.
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-inner">
+    <div>© 2026 BrightFlow Inc</div>
+    <nav>
+      <a href="../animatedtactics-privacy.html">Privacy Policy</a>
+      <a href="https://x.com/AnimatedTactics" rel="noopener">@AnimatedTactics</a>
+      <a href="mailto:bilgehan@brightflow.biz">Contact</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
