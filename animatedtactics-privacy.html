@@ -25,10 +25,10 @@
 <main>
   <p class="home"><a href="index.html">&larr; BrightFlow Inc</a></p>
   <h1>Animated Tactics — Privacy Policy</h1>
-  <p class="updated">Last updated: 20 October 2026</p>
+  <p class="updated">Last updated: 21 October 2026</p>
 
   <h2>Summary</h2>
-  <p>Animated Tactics does not sell your personal information, and collects none unless you create an account for match data. There are no analytics, no advertising, and no tracking of any kind. Everything you create stays on your device unless you start one of the optional network features below, each of which sends only what its section says. Match data goes through our own service and needs a free account, created with Sign in with Apple; that account and the match-data requests made with it are the only things we receive.</p>
+  <p>Animated Tactics does not sell your personal information. There is no advertising and no tracking of any kind. The app counts how it is used, anonymously — see &quot;Usage counts&quot; below — and collects nothing else unless you create an account for match data. Everything you create stays on your device unless you start one of the optional network features below, each of which sends only what its section says. Match data goes through our own service and needs a free account, created with Sign in with Apple; that account and the match-data requests made with it are the only things we receive, alongside the anonymous usage counts.</p>
 
   <h2>What the app stores</h2>
   <p>Tactics scenes you save, your projects, your team names, kit colours, and player names — including names, numbers and positions filled in from a real match by the features below — are stored locally on your device. Replies from those features (a day&#x27;s fixtures, a match&#x27;s line-ups, a resolved team setup, the position data of a match&#x27;s moments) are kept in a cache on this device so the same question is never asked twice; you can clear it in Settings. A count of how many exports you have made this month is stored on your device and in your private iCloud key-value storage so your free-tier allowance follows your Apple Account across reinstalls. None of this is ever sent to us, and we have no access to it.</p>
@@ -36,7 +36,12 @@
   <h2>Network use</h2>
   <p>The app makes network requests only for the optional features below, and only when you start them.</p>
   <p>Match data. Signed in to your Animated Tactics account (below), choosing a day sends that date, tapping a match sends that match&#x27;s identifier, and loading a club&#x27;s squad sends that club&#x27;s name and identifier, to our own service at api.animatedtactics.com, which asks API-Football on our account and returns its answer. Our service keeps those answers in a shared cache so the same question is not asked twice, and counts requests per account so that no one account can use up the allowance everyone shares. Its access log records each request&#x27;s time, network address and the address asked for, and is deleted after seven days. What comes back — the day&#x27;s fixtures, the two published line-ups, or that club&#x27;s current squad — fills your rosters and is cached on this device. Nothing about your board is sent.</p>
-  <p>If you use none of them, the app makes no network requests of its own.</p>
+  <p>If you use none of them, the app makes no network requests of its own, beyond the usage counts below.</p>
+
+  <h2>Usage counts</h2>
+  <p>The app counts how it is used, so we can tell which parts of it earn their place: that the app opened, a scene was created, played, saved or exported, a paywall was shown, and the like. An event carries only fixed values and counts — a format, a number of layers, a formation — never a name, a title, a team or anything you have typed, and never the content of a scene.</p>
+  <p>Events are labelled with a random identifier the app generates on your device. It is not your account and not your Apple ID, it is shared with nobody, and our server keeps no IP address with the events. Events are kept for 90 days; after that, only daily totals remain.</p>
+  <p>You can turn usage counts off in Settings, under Usage data. Turning it off also deletes the identifier, so turning it back on starts again with a new, unrelated one.</p>
 
   <h2>Your account</h2>
   <p>Match data needs an Animated Tactics account, which you create with Sign in with Apple. Apple gives us an identifier for you and, if you allow it, your email address — or a private relay address, if you choose to hide yours. They are kept by Supabase, the sign-in service our server uses, so that you stay signed in and so that requests can be counted per account. The account holds nothing about your boards, scenes or exports, and your session is kept in this device&#x27;s keychain. You can sign out, or delete the account and everything kept with it, in Settings under Animated Tactics account; deleting removes it from our service at once. Everything else in the app works without an account.</p>
